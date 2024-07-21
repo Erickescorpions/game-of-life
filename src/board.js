@@ -17,6 +17,9 @@ export class Board {
     }
 
     this.ui.setFillStyle('rgb(256, 256, 256)');
+  }
+
+  registerOnClickEvent() {
     this.ui.addEventListener('click', (event) => this.manipulateCells(event));
   }
 
