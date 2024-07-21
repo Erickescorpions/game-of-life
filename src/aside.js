@@ -52,6 +52,7 @@ bestPatterns.forEach((bestPattern, index) => {
   canvas.id = canvasId;
   canvas.width = width;
   canvas.height = height;
+  canvas.classList = "patterns"
 
   div.appendChild(h3);
   div.appendChild(canvas);
@@ -64,11 +65,14 @@ bestPatterns.forEach((bestPattern, index) => {
 
   board.draw()
 
-  patternsInCanvas.push(board)
+  patternsInCanvas.push({
+    pattern: bestPattern.pattern,
+    board,
+  })
 })
 
-patternsInCanvas.forEach(board => {
+patternsInCanvas.forEach(patternInCanva => {
   setInterval(() => {
-    window.requestAnimationFrame(() => board.generateLife())
+    window.requestAnimationFrame(() => patternInCanva.board.generateLife())
   }, 1000 / 2)
 })
