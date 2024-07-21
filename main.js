@@ -1,20 +1,16 @@
 import './style.css'
-import { GAME_STATE, WIDTH, HEIGHT } from './src/constants'
+import { GAME_STATE, WIDTH, HEIGHT, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS } from './src/constants'
 import { Board } from './src/board'
-
-document.querySelector('#app').innerHTML = `
-  <canvas id="board" width=${WIDTH} height=${HEIGHT}></canvas>
-  <button id="start">Start game</button>
-`
+import { UI } from './src/ui'
+import './src/aside'
 
 const startButton = document.getElementById('start')
 
 let gameState = GAME_STATE.STOP
 let intervalId = null
 
-// creamos la grilla del canvas
-let board = new Board()
-
+let ui = new UI('board')
+let board = new Board(ui, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS)
 // draw the grid
 board.draw()
 

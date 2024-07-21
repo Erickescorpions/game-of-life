@@ -1,12 +1,14 @@
-import { TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, CELL_STATE } from './constants'
+import { CELL_STATE } from './constants'
 
 export class Cell {
-  constructor(x, y, width, height, state = CELL_STATE.DEAD) {
+  constructor(x, y, width, height, vertical_cells, horizontal_cells, state = CELL_STATE.DEAD) {
     this.x = x
     this.y = y
     this.width = width
     this.height = height
     this.state = state
+    this.vertical_cells = vertical_cells
+    this.horizontal_cells = horizontal_cells
   }
 
   draw() {
@@ -25,7 +27,7 @@ export class Cell {
     for (let i = prevRow; i <= nextRow; i++) {
       for (let j = prevCell; j <= nextCell; j++) {
         if (i === row && j === column) continue
-        if (i < 0 || j < 0 || i > TOTAL_VERTICAL_CELLS - 1 || j > TOTAL_HORIZONTAL_CELLS - 1) continue
+        if (i < 0 || j < 0 || i > this.vertical_cells - 1 || j > this.horizontal_cells - 1) continue
         if (board[i][j].state === CELL_STATE.LIVE) {
           liveCellsFound++
         }

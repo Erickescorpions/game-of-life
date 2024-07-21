@@ -1,77 +1,82 @@
-import { Cell } from './cell'
-import { CELL_SIZE, TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, CELL_STATE } from './constants'
+// board.js
+import { Cell } from './cell';
+import { CELL_SIZE, CELL_STATE } from './constants';
 
 export class Board {
-  constructor() {
-    this.canvas = document.getElementById('board')
-    this.ctx = this.canvas.getContext('2d')
+  constructor(ui, cell_size, num_vertical_cells, num_horizontal_cells) {
+    this.ui = ui;
+    this.cells = [];
+    this.cell_size = cell_size;
 
-    // creamos la grilla del canvas
-    this.cells = []
-
-    for (let i = 0; i < TOTAL_VERTICAL_CELLS; i++) {
-      let row = []
-      for (let j = 0; j < TOTAL_HORIZONTAL_CELLS; j++) {
-        row.push(new Cell(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE, CELL_STATE.DEAD))
+    for (let i = 0; i < num_vertical_cells; i++) {
+      let row = [];
+      for (let j = 0; j < num_horizontal_cells; j++) {
+        row.push(new Cell(j * cell_size, i * cell_size, cell_size, cell_size, num_vertical_cells, num_horizontal_cells, CELL_STATE.DEAD));
       }
-
-      this.cells.push(row)
+      this.cells.push(row);
     }
 
-
-    this.ctx.fillStyle = 'rgb(256, 256, 256)'
-    // registrando eventos
-    this.canvas.addEventListener('click', (event) => this.manipulateCells(event))
+    this.ui.setFillStyle('rgb(256, 256, 256)');
+    this.ui.addEventListener('click', (event) => this.manipulateCells(event));
   }
 
   draw() {
-    // draw the grid
-    this.cells.forEach(row => row.forEach(cell => this.ctx.stroke(cell.draw())))
+    this.cells.forEach(row => row.forEach(cell => {
+      if (cell.state === CELL_STATE.LIVE) {
+        this.ui.fill(cell.draw());
+      }
+      this.ui.stroke(cell.draw());
+    }));
   }
 
   manipulateCells(event) {
-    let xPos = event.offsetX
-    let yPos = event.offsetY
+    let xPos = event.offsetX;
+    let yPos = event.offsetY;
 
     this.cells.forEach(row => {
       row.forEach(cell => {
-        if (cell.x <= xPos && cell.x + CELL_SIZE > xPos && cell.y <= yPos && cell.y + CELL_SIZE > yPos) {
+        if (cell.x <= xPos && cell.x + this.cell_size > xPos && cell.y <= yPos && cell.y + this.cell_size > yPos) {
           if (cell.state === CELL_STATE.LIVE) {
-            cell.setState(CELL_STATE.DEAD)
-            this.ctx.clearRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
-            this.ctx.stroke(cell.draw())
+            cell.setState(CELL_STATE.DEAD);
+            this.ui.clearRect(cell.x, cell.y, this.cell_size, this.cell_size);
+            this.ui.stroke(cell.draw());
           } else {
-            cell.setState(CELL_STATE.LIVE)
-            this.ctx.fill(cell.draw())
-            this.ctx.stroke(cell.draw())
+            cell.setState(CELL_STATE.LIVE);
+            this.ui.fill(cell.draw());
+            this.ui.stroke(cell.draw());
           }
         }
-      })
-    })
+      });
+    });
   }
 
   generateLife() {
     let newBoard = this.cells.map((row, rowIndex) =>
       row.map((cell, cellIndex) => {
-        // check state of each cell according the rules
         let newState = cell.checkCurrentState(this.cells, rowIndex, cellIndex)
-        return new Cell(cell.x, cell.y, cell.width, cell.height, newState)
+        return new Cell(cell.x, cell.y, cell.width, cell.height, this.num_vertical_cells, this.num_horizontal_cells, newState)
       })
     )
 
-    // Update the state of the cells
     this.cells.forEach((row, rowIndex) => {
       row.forEach((cell, cellIndex) => {
         cell.setState(newBoard[rowIndex][cellIndex].state)
         if (cell.state === CELL_STATE.LIVE) {
-          this.ctx.fill(cell.draw())
-          this.ctx.stroke(cell.draw())
+          this.ui.fill(cell.draw())
+          this.ui.stroke(cell.draw())
         } else {
-          this.ctx.clearRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
-          this.ctx.stroke(cell.draw())
+          this.ui.clearRect(cell.x, cell.y, this.cell_size, this.cell_size)
+          this.ui.stroke(cell.draw())
         }
       })
     })
+  }
 
+  fillBoard(pattern, chr) {
+    pattern.forEach((row, rowIndex) => row.forEach((cell, cellIndex) => {
+      if(cell === chr) {
+        this.cells[rowIndex][cellIndex].setState(CELL_STATE.LIVE)
+      }
+    }))
   }
 }
