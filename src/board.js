@@ -21,7 +21,7 @@ export class Board {
 
     this.ctx.fillStyle = 'rgb(256, 256, 256)'
     // registrando eventos
-    this.canvas.addEventListener('click', (event) => this.reviveCell(event))
+    this.canvas.addEventListener('click', (event) => this.manipulateCells(event))
   }
 
   draw() {
@@ -29,15 +29,22 @@ export class Board {
     this.cells.forEach(row => row.forEach(cell => this.ctx.stroke(cell.draw())))
   }
 
-  reviveCell(event) {
+  manipulateCells(event) {
     let xPos = event.offsetX
     let yPos = event.offsetY
 
     this.cells.forEach(row => {
       row.forEach(cell => {
         if(cell.x <= xPos && cell.x + CELL_SIZE > xPos && cell.y <= yPos && cell.y + CELL_SIZE > yPos) {
-          cell.setState(CELL_STATE.LIVE)
-          this.ctx.fill(cell.draw())
+          if(cell.state === CELL_STATE.LIVE) {
+            cell.setState(CELL_STATE.DEAD)
+            this.ctx.clearRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
+            this.ctx.stroke(cell.draw())
+          } else {
+            cell.setState(CELL_STATE.LIVE)
+            this.ctx.fill(cell.draw())
+            this.ctx.stroke(cell.draw())
+          }
         }
       })
     })
@@ -58,6 +65,7 @@ export class Board {
         cell.setState(newBoard[rowIndex][cellIndex].state)
         if (cell.state === CELL_STATE.LIVE) {
           this.ctx.fill(cell.draw())
+          this.ctx.stroke(cell.draw())
         } else {
           this.ctx.clearRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
           this.ctx.stroke(cell.draw())
