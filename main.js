@@ -10,14 +10,14 @@ let gameState = GAME_STATE.STOP
 let intervalId = null
 
 let ui = new UI('board')
-let board = new Board(ui, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS)
+let mainBoard = new Board(ui, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS)
 // draw the grid
-board.draw()
-board.registerOnClickEvent()
+mainBoard.draw()
+mainBoard.registerOnClickEvent()
 
 const startGame = () => {
   return setInterval(() => {
-    window.requestAnimationFrame(() => board.generateLife())
+    window.requestAnimationFrame(() => mainBoard.generateLife())
   }, 1000 / 2)
 }
 

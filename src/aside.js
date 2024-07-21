@@ -64,6 +64,46 @@ bestPatterns.forEach((bestPattern, index) => {
   board.fillBoard(bestPattern.pattern, 'x')
 
   board.draw()
+  
+  // Al presionar el mouse clonamos un nuevo canvas
+  canvas.addEventListener('mousedown', (event) => {
+    // creamos una copia del canvas y la posicionamos 5 px a la derecha
+    let clonedCanvas = canvas.cloneNode()
+    clonedCanvas.id = canvasId + 'clone'
+    clonedCanvas.classList = "copy-pattern"
+
+    // colocamos justo encima el nuevo elemento
+    // regresa un objeto DOMRect con la informacion de tam y posicionamiento
+    const rect = canvas.getBoundingClientRect();
+
+    clonedCanvas.style.top = rect.top + 'px';
+    clonedCanvas.style.left = rect.left + 'px';
+
+    document.body.appendChild(clonedCanvas)
+
+    // creamos una copia del board 
+    const copyUi = new UI(canvasId + 'clone')
+    const copyBoard = new Board(copyUi, CELL_SIZE, bestPattern.pattern.length, bestPattern.pattern[0].length)
+    copyBoard.fillBoard(bestPattern.pattern, 'x')
+
+    copyBoard.draw()
+
+    // Registramos el evento 'mousedown' en el canvas clonado
+    clonedCanvas.addEventListener('mousedown', (copyEvent) => {
+      console.log(copyEvent)
+    })
+
+    // Simulamos un evento 'mousedown'
+    const clonedEvent = new MouseEvent('mousedown', {
+      bubbles: false, // para evitar que el evento se propague
+      cancelable: true,
+      clientX: event.clientX,
+      clientY: event.clientY
+    })
+
+    clonedCanvas.dispatchEvent(clonedEvent)
+  })
+  
 
   patternsInCanvas.push({
     pattern: bestPattern.pattern,

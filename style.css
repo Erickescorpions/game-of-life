@@ -111,4 +111,14 @@ canvas {
   border: 2px white solid;
   border-radius: 8px;
   box-sizing: border-box;
+  cursor: pointer;
+}
+
+.copy-pattern {
+  position: absolute;
+  opacity: 0.2;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+  background-color: red;
 }
