@@ -1,75 +1,18 @@
 import './style.css'
-
-const WIDTH = 800
-const HEIGHT = 800
-const CELL_SIZE = 20
-const CELL_STATE = {
-  DEAD: 0,
-  LIVE: 1
-}
-const TOTAL_VERTICAL_CELLS = HEIGHT / CELL_SIZE
-const TOTAL_HORIZONTAL_CELLS = WIDTH / CELL_SIZE
+import { Cell } from './src/cell'
+import { CELL_SIZE, GAME_STATE, TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, WIDTH, HEIGHT, CELL_STATE } from './src/consts'
 
 document.querySelector('#app').innerHTML = `
   <canvas id="board" width=${WIDTH} height=${HEIGHT}></canvas>
   <button id="start">Start game</button>
 `
 
-class Cell {
-  constructor(x, y, width, height, state = CELL_STATE.DEAD) {
-    this.x = x
-    this.y = y
-    this.width = width
-    this.height = height
-    this.state = state
-  }
+const canvas = document.getElementById('board')
+const ctx = canvas.getContext('2d')
+const startButton = document.getElementById('start')
 
-  draw() {
-    const rectangle = new Path2D()
-    rectangle.rect(this.x, this.y, this.width, this.height)
-    return rectangle
-  }
-
-  checkCurrentState(board, row, column) {
-    let prevRow = row - 1
-    let nextRow = row + 1
-    let nextCell = column + 1
-    let prevCell = column - 1
-    let liveCellsFound = 0
-
-    for(let i = prevRow; i <= nextRow; i++) {
-      for(let j = prevCell; j <= nextCell; j++) {
-        if(i === row && j === column) continue
-        if(i < 0 || j < 0 || i > TOTAL_VERTICAL_CELLS - 1 || j > TOTAL_HORIZONTAL_CELLS - 1) continue
-        if(board[i][j].state === CELL_STATE.LIVE) {
-          liveCellsFound++
-        }
-      }
-    }
-
-    // Reglas del juego de la vida de conway
-    // 1. Si una celula muerta tiene exactamente 3 celulas vecinas vivas, nace
-    // 2. Si una celula viva tiene mas de tres vecinos al rededos muere
-    // 3. Si una celula tiene uno o ningun vecino muere
-    // 4. si una celula tiene 2 o 3 vecinos a su alrededor vive
-
-    if (liveCellsFound === 3 && this.state === CELL_STATE.DEAD) {
-      return CELL_STATE.LIVE
-    } else if ((liveCellsFound < 2 || liveCellsFound > 3) && this.state === CELL_STATE.LIVE) {
-      return CELL_STATE.DEAD
-    } else {
-      return this.state
-    }
-  }
-
-  setState(state) {
-    this.state = state
-  }
-}
-
-let canvas = document.getElementById('board')
-let ctx = canvas.getContext('2d')
-let startButton = document.getElementById('start')
+let gameState = GAME_STATE.STOP
+let intervalId = null
 
 ctx.fillStyle = 'rgb(256, 256, 256)'
 
@@ -123,12 +66,25 @@ const generateLife = () => {
     })
   })
 
-  setTimeout(() => {
+}
+
+const startGame = () => {
+  return setInterval(() => {
     window.requestAnimationFrame(generateLife)
   }, 1000 / 2)
 }
 
+const stopGame = (intervalId) => clearInterval(intervalId)
+
 startButton.addEventListener('click', () => {
-  console.log('click')
-  generateLife()
+
+  if(gameState === GAME_STATE.START) {
+    gameState = GAME_STATE.STOP
+    startButton.innerHTML = "Start game"
+    stopGame(intervalId)
+  } else {
+    gameState = GAME_STATE.START
+    startButton.innerHTML = "Stop game"
+    intervalId = startGame()
+  }
 })
