@@ -1,4 +1,4 @@
-import {TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, CELL_STATE} from './consts'
+import { TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, CELL_STATE } from './constants'
 
 export class Cell {
   constructor(x, y, width, height, state = CELL_STATE.DEAD) {
@@ -22,11 +22,11 @@ export class Cell {
     let prevCell = column - 1
     let liveCellsFound = 0
 
-    for(let i = prevRow; i <= nextRow; i++) {
-      for(let j = prevCell; j <= nextCell; j++) {
-        if(i === row && j === column) continue
-        if(i < 0 || j < 0 || i > TOTAL_VERTICAL_CELLS - 1 || j > TOTAL_HORIZONTAL_CELLS - 1) continue
-        if(board[i][j].state === CELL_STATE.LIVE) {
+    for (let i = prevRow; i <= nextRow; i++) {
+      for (let j = prevCell; j <= nextCell; j++) {
+        if (i === row && j === column) continue
+        if (i < 0 || j < 0 || i > TOTAL_VERTICAL_CELLS - 1 || j > TOTAL_HORIZONTAL_CELLS - 1) continue
+        if (board[i][j].state === CELL_STATE.LIVE) {
           liveCellsFound++
         }
       }

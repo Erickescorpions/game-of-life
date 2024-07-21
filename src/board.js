@@ -1,23 +1,23 @@
 import { Cell } from './cell'
-import { CELL_SIZE, GAME_STATE, TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, WIDTH, HEIGHT, CELL_STATE } from './consts'
+import { CELL_SIZE, TOTAL_HORIZONTAL_CELLS, TOTAL_VERTICAL_CELLS, CELL_STATE } from './constants'
 
 export class Board {
   constructor() {
     this.canvas = document.getElementById('board')
     this.ctx = this.canvas.getContext('2d')
-    
+
     // creamos la grilla del canvas
     this.cells = []
-    
+
     for (let i = 0; i < TOTAL_VERTICAL_CELLS; i++) {
       let row = []
       for (let j = 0; j < TOTAL_HORIZONTAL_CELLS; j++) {
         row.push(new Cell(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE, CELL_STATE.DEAD))
       }
-      
+
       this.cells.push(row)
     }
-    
+
 
     this.ctx.fillStyle = 'rgb(256, 256, 256)'
     // registrando eventos
@@ -35,8 +35,8 @@ export class Board {
 
     this.cells.forEach(row => {
       row.forEach(cell => {
-        if(cell.x <= xPos && cell.x + CELL_SIZE > xPos && cell.y <= yPos && cell.y + CELL_SIZE > yPos) {
-          if(cell.state === CELL_STATE.LIVE) {
+        if (cell.x <= xPos && cell.x + CELL_SIZE > xPos && cell.y <= yPos && cell.y + CELL_SIZE > yPos) {
+          if (cell.state === CELL_STATE.LIVE) {
             cell.setState(CELL_STATE.DEAD)
             this.ctx.clearRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
             this.ctx.stroke(cell.draw())
@@ -51,14 +51,14 @@ export class Board {
   }
 
   generateLife() {
-    let newBoard = this.cells.map((row, rowIndex) => 
+    let newBoard = this.cells.map((row, rowIndex) =>
       row.map((cell, cellIndex) => {
         // check state of each cell according the rules
         let newState = cell.checkCurrentState(this.cells, rowIndex, cellIndex)
         return new Cell(cell.x, cell.y, cell.width, cell.height, newState)
       })
     )
-  
+
     // Update the state of the cells
     this.cells.forEach((row, rowIndex) => {
       row.forEach((cell, cellIndex) => {
@@ -72,6 +72,6 @@ export class Board {
         }
       })
     })
-  
+
   }
 }

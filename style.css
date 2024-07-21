@@ -30,7 +30,7 @@ canvas {
   left: 50%;
   transform: translateX(-50%);
 
-  --color: #4CAF50;
+  --color: #4caf50;
   --dark-color: color-mix(in srgb, var(--color), black 25%);
 
   font-weight: bold;
@@ -43,7 +43,6 @@ canvas {
 
   transition: 0.1s;
 }
-
 
 #start:active {
   border: 1px solid var(--dark-color);

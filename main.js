@@ -1,5 +1,5 @@
 import './style.css'
-import { GAME_STATE, WIDTH, HEIGHT } from './src/consts'
+import { GAME_STATE, WIDTH, HEIGHT } from './src/constants'
 import { Board } from './src/board'
 
 document.querySelector('#app').innerHTML = `
@@ -28,7 +28,7 @@ const stopGame = (intervalId) => clearInterval(intervalId)
 
 startButton.addEventListener('click', () => {
 
-  if(gameState === GAME_STATE.START) {
+  if (gameState === GAME_STATE.START) {
     gameState = GAME_STATE.STOP
     startButton.innerHTML = "Start game"
     stopGame(intervalId)
@@ -38,7 +38,7 @@ startButton.addEventListener('click', () => {
     gameState = GAME_STATE.START
     startButton.innerHTML = "Stop game"
     intervalId = startGame()
-    
+
     startButton.style.setProperty('--color', '#757575');
   }
 })
