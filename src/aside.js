@@ -1,43 +1,21 @@
 import { UI } from "./ui"
 import { Board } from "./board";
 import { CELL_SIZE } from "./constants";
+import { bestPatterns } from "./best_patterns";
 
 const sidebarContent = document.querySelector('#sidebar-content')
 
-const bestPatterns = [
-  {
-    name: 'block',
-    pattern: [
-      ['', '', '', ''],
-      ['', 'x', 'x', ''],
-      ['', 'x', 'x', ''],
-      ['', '', '', ''],
-    ],
-  },
-  {
-    name: 'bee-hive',
-    pattern: [
-      ['', '', '', '', '', ''],
-      ['', '', 'x', 'x', '', ''],
-      ['', 'x', '', '', 'x', ''],
-      ['', '', 'x', 'x', '', ''],
-      ['', '', '', '', '', ''],
-    ]
-  },
-  {
-    name: 'beacon',
-    pattern: [
-      ['', '', '', '', '', ''],
-      ['', 'x', 'x', '', '', ''],
-      ['', 'x', '', '', '', ''],
-      ['', '', '', '', 'x', ''],
-      ['', '', '', 'x', 'x', ''],
-      ['', '', '', '', '', ''],
-    ]
-  }
-]
-
 let patternsInCanvas = []
+
+
+function dragAndDrop(event) {
+  
+  console.log('Se ha hecho click y no se ha soltado')
+  
+  const targetElement = event.target
+
+  targetElement.onmouseup = () => targetElement.remove()
+}
 
 bestPatterns.forEach((bestPattern, index) => {
   let height = CELL_SIZE * bestPattern.pattern.length
@@ -69,7 +47,8 @@ bestPatterns.forEach((bestPattern, index) => {
   canvas.addEventListener('mousedown', (event) => {
     // creamos una copia del canvas y la posicionamos 5 px a la derecha
     let clonedCanvas = canvas.cloneNode()
-    clonedCanvas.id = canvasId + 'clone'
+    let cloneCanvasId = canvasId + '-clone'
+    clonedCanvas.id = cloneCanvasId
     clonedCanvas.classList = "copy-pattern"
 
     // colocamos justo encima el nuevo elemento
@@ -82,16 +61,14 @@ bestPatterns.forEach((bestPattern, index) => {
     document.body.appendChild(clonedCanvas)
 
     // creamos una copia del board 
-    const copyUi = new UI(canvasId + 'clone')
+    const copyUi = new UI(cloneCanvasId)
     const copyBoard = new Board(copyUi, CELL_SIZE, bestPattern.pattern.length, bestPattern.pattern[0].length)
     copyBoard.fillBoard(bestPattern.pattern, 'x')
 
     copyBoard.draw()
 
     // Registramos el evento 'mousedown' en el canvas clonado
-    clonedCanvas.addEventListener('mousedown', (copyEvent) => {
-      console.log(copyEvent)
-    })
+    clonedCanvas.addEventListener('mousedown', dragAndDrop)
 
     // Simulamos un evento 'mousedown'
     const clonedEvent = new MouseEvent('mousedown', {
