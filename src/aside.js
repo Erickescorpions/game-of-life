@@ -7,13 +7,19 @@ const sidebarContent = document.querySelector('#sidebar-content')
 
 let patternsInCanvas = []
 
-
 function dragAndDrop(event) {
-  
-  console.log('Se ha hecho click y no se ha soltado')
-  
   const targetElement = event.target
+  const rect = targetElement.getBoundingClientRect()
+  const horizontalDistanceToTargetEdge = Math.abs(rect.left - event.clientX)
+  const verticalDistanceToTargetEdge = Math.abs(rect.top - event.clientY)
 
+  const moveWithTheMouse = (onMouseMoveEvent) => {    
+    targetElement.style.left = onMouseMoveEvent.clientX - horizontalDistanceToTargetEdge + 'px'
+    targetElement.style.top = onMouseMoveEvent.clientY - verticalDistanceToTargetEdge + 'px'
+  }
+
+  targetElement.onmousemove = (onMouseMoveEvent) => moveWithTheMouse(onMouseMoveEvent)
+  // aqui tiene que ir la logica para interactuar con el board principal
   targetElement.onmouseup = () => targetElement.remove()
 }
 
