@@ -7,19 +7,32 @@ const sidebarContent = document.querySelector('#sidebar-content')
 
 let patternsInCanvas = []
 
-function dragAndDrop(event) {
+function dragAndDrop(event, pattern) {
   const targetElement = event.target
   const rect = targetElement.getBoundingClientRect()
   const horizontalDistanceToTargetEdge = Math.abs(rect.left - event.clientX)
   const verticalDistanceToTargetEdge = Math.abs(rect.top - event.clientY)
 
-  const moveWithTheMouse = (onMouseMoveEvent) => {    
-    targetElement.style.left = onMouseMoveEvent.clientX - horizontalDistanceToTargetEdge + 'px'
-    targetElement.style.top = onMouseMoveEvent.clientY - verticalDistanceToTargetEdge + 'px'
+  const moveWithTheMouse = (onMouseMoveEvent) => {
+    const position = {
+      x: onMouseMoveEvent.clientX - horizontalDistanceToTargetEdge,
+      y: onMouseMoveEvent.clientY - verticalDistanceToTargetEdge
+    }
+    targetElement.style.left = position.x + 'px'
+    targetElement.style.top = position.y + 'px'
+
+    const dragPatternEvent = new CustomEvent('dragpattern', {
+      detail: {
+        position,
+        pattern
+      }
+    })
+
+    console.log('emitiendo evento')
+    document.dispatchEvent(dragPatternEvent);
   }
 
   targetElement.onmousemove = (onMouseMoveEvent) => moveWithTheMouse(onMouseMoveEvent)
-  // aqui tiene que ir la logica para interactuar con el board principal
   targetElement.onmouseup = () => targetElement.remove()
 }
 
@@ -48,7 +61,7 @@ bestPatterns.forEach((bestPattern, index) => {
   board.fillBoard(bestPattern.pattern, 'x')
 
   board.draw()
-  
+
   // Al presionar el mouse clonamos un nuevo canvas
   canvas.addEventListener('mousedown', (event) => {
     // creamos una copia del canvas y la posicionamos 5 px a la derecha
@@ -74,7 +87,7 @@ bestPatterns.forEach((bestPattern, index) => {
     copyBoard.draw()
 
     // Registramos el evento 'mousedown' en el canvas clonado
-    clonedCanvas.addEventListener('mousedown', dragAndDrop)
+    clonedCanvas.addEventListener('mousedown', (event) => dragAndDrop(event, bestPattern.pattern))
 
     // Simulamos un evento 'mousedown'
     const clonedEvent = new MouseEvent('mousedown', {
@@ -86,7 +99,7 @@ bestPatterns.forEach((bestPattern, index) => {
 
     clonedCanvas.dispatchEvent(clonedEvent)
   })
-  
+
 
   patternsInCanvas.push({
     pattern: bestPattern.pattern,

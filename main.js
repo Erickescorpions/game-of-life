@@ -13,6 +13,7 @@ let ui = new UI('board')
 let mainBoard = new Board(ui, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS)
 // draw the grid
 mainBoard.draw()
+mainBoard.registerDraggingPatternEvent()
 mainBoard.registerOnClickEvent()
 
 const startGame = () => {
