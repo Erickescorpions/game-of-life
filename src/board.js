@@ -28,7 +28,7 @@ export class Board {
   registerDraggingPatternEvent() {
     document.addEventListener('dragpattern', (event) => {
       const rect = this.ui.canvas.getBoundingClientRect()
-      const { position, pattern } = event.detail
+      const { position, pattern, clickRelease } = event.detail
 
       if (position.x <= rect.left || position.y <= rect.top || position.x >= rect.rigth || position.y >= rect.bottom) return
       
@@ -45,17 +45,26 @@ export class Board {
         row.forEach((cell, cellIndex) => {
           if (cell.x <= canvasPosition.x && canvasPosition.x < (cell.x + this.cell_size) && cell.y <= canvasPosition.y && canvasPosition.y < (cell.y + this.cell_size)) {
             startCell = { rowIndex, cellIndex }
-            console.log(rowIndex, cellIndex)
             return
           }
         })
       })
 
       pattern.forEach((row, rowIndex) => row.forEach((cell, cellIndex) => {
-        let currentBoardCell = this.cells[rowIndex + startCell.rowIndex][cellIndex + startCell.cellIndex]
+        let verticalCellPos = rowIndex + startCell.rowIndex
+        let horizontalCellPos = cellIndex + startCell.cellIndex
+        
+        if(verticalCellPos >= this.num_vertical_cells || horizontalCellPos >= this.num_horizontal_cells) return
+
+        let currentBoardCell = this.cells[verticalCellPos][horizontalCellPos]
+
         if (cell === 'x') {
           this.ui.fill(currentBoardCell.draw())
           this.ui.stroke(currentBoardCell.draw())
+
+          if(clickRelease === true) {
+            currentBoardCell.setState(CELL_STATE.LIVE)
+          }
         } else {
           this.ui.clearRect(currentBoardCell.x, currentBoardCell.y, this.cell_size, this.cell_size)
           this.ui.stroke(currentBoardCell.draw())

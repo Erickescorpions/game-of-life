@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="src/sidebar.css">
   </head>
   <body>
     <div id="app">
@@ -13,16 +14,20 @@
       <button id="start">Start game</button>
     </div>
 
-    <section id="aside">
-      <label id="toggle-button" class="toggle-button" for="aside-button">
+    <section>
+      <label id="menu-toggle" class="menu-toggle" for="menu-checkbox">
         ☰
       </label>
-      <input id="aside-button" type="checkbox">
-
+      <input id="menu-checkbox" type="checkbox">
+    
       <aside class="sidebar">
-        <div class="sidebar-content" id="sidebar-content">
+
+        <div class="sidebar-header">
           <h2>Example of patterns</h2>
+          <hr>
         </div>
+
+        <div class="sidebar-content" id="sidebar-content"></div>
       </aside>
     </section>
     <script type="module" src="/main.js"></script>

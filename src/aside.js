@@ -7,6 +7,18 @@ const sidebarContent = document.querySelector('#sidebar-content')
 
 let patternsInCanvas = []
 
+const emitDragDAndDropEvent = (position, pattern, clickRelease) => {
+  const dragPatternEvent = new CustomEvent('dragpattern', {
+    detail: {
+      position,
+      pattern, 
+      clickRelease
+    }
+  })
+  
+  document.dispatchEvent(dragPatternEvent);
+}
+
 function dragAndDrop(event, pattern) {
   const targetElement = event.target
   const rect = targetElement.getBoundingClientRect()
@@ -21,19 +33,21 @@ function dragAndDrop(event, pattern) {
     targetElement.style.left = position.x + 'px'
     targetElement.style.top = position.y + 'px'
 
-    const dragPatternEvent = new CustomEvent('dragpattern', {
-      detail: {
-        position,
-        pattern
-      }
-    })
-
-    console.log('emitiendo evento')
-    document.dispatchEvent(dragPatternEvent);
+    emitDragDAndDropEvent(position, pattern, false)
   }
 
   targetElement.onmousemove = (onMouseMoveEvent) => moveWithTheMouse(onMouseMoveEvent)
-  targetElement.onmouseup = () => targetElement.remove()
+  targetElement.onmouseup = (onMouseUpEvent) => {
+    const position = {
+      x: onMouseUpEvent.clientX - horizontalDistanceToTargetEdge,
+      y: onMouseUpEvent.clientY - verticalDistanceToTargetEdge
+    }
+    targetElement.style.left = position.x + 'px'
+    targetElement.style.top = position.y + 'px'
+
+    emitDragDAndDropEvent(position, pattern, true)
+    targetElement.remove()
+  }
 }
 
 bestPatterns.forEach((bestPattern, index) => {
@@ -45,11 +59,12 @@ bestPatterns.forEach((bestPattern, index) => {
   let h3 = document.createElement('h3');
   let canvas = document.createElement('canvas');
 
+  div.classList = "pattern-container";
   h3.textContent = bestPattern.name;
   canvas.id = canvasId;
   canvas.width = width;
   canvas.height = height;
-  canvas.classList = "patterns"
+  canvas.classList = "pattern"
 
   div.appendChild(h3);
   div.appendChild(canvas);
@@ -112,3 +127,4 @@ patternsInCanvas.forEach(patternInCanva => {
     window.requestAnimationFrame(() => patternInCanva.board.generateLife())
   }, 1000 / 2)
 })
+
