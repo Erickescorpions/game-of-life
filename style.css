@@ -16,6 +16,9 @@
 body {
   display: grid;
   place-items: center;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 canvas {
@@ -50,4 +53,8 @@ canvas {
 #start:active {
   border: 1px solid var(--dark-color);
   border-bottom-width: 8px;
+}
+
+#board {
+
 }

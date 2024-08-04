@@ -1,10 +1,16 @@
 
 export class UI {
-  constructor(canvasId) {
+  constructor(canvasId, width, height) {
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) {
       throw new Error(`No canvas found with id ${canvasId}`);
     }
+
+    if(!!width && !!height) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+
     this.ctx = this.canvas.getContext('2d');
   }
 

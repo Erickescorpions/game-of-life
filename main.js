@@ -9,7 +9,7 @@ const startButton = document.getElementById('start')
 let gameState = GAME_STATE.STOP
 let intervalId = null
 
-let ui = new UI('board')
+let ui = new UI('board', WIDTH, HEIGHT)
 let mainBoard = new Board(ui, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS)
 // draw the grid
 mainBoard.draw()
