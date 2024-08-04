@@ -1,6 +1,6 @@
 import { UI } from "./ui"
 import { Board } from "./board";
-import { CELL_SIZE } from "./constants";
+import { CELL_SIZE, TOUCH_DEVICE } from "./constants";
 import { bestPatterns } from "./best_patterns";
 
 const sidebarContent = document.querySelector('#sidebar-content')
@@ -12,41 +12,65 @@ const closeSidebarMenu = () => {
   menuButton.checked = false
 }
 
-const emitDragDAndDropEvent = (position, pattern, clickRelease) => {
-  const dragPatternEvent = new CustomEvent('dragpattern', {
-    detail: {
-      position,
-      pattern, 
-      clickRelease
-    }
-  })
-  
-  document.dispatchEvent(dragPatternEvent);
-}
-
-function dragAndDrop(event, pattern) {
-  const targetElement = event.target
+function dragAndDrop(mainEvent, pattern) {
+  const targetElement = mainEvent.target
   const rect = targetElement.getBoundingClientRect()
-  const horizontalDistanceToTargetEdge = Math.abs(rect.left - event.clientX)
-  const verticalDistanceToTargetEdge = Math.abs(rect.top - event.clientY)
+  const horizontalDistanceToTargetEdge = Math.abs(rect.left - mainEvent.clientX)
+  const verticalDistanceToTargetEdge = Math.abs(rect.top - mainEvent.clientY)
+
+  const emitDragDAndDropEvent = (position, pattern, clickRelease) => {
+    const dragPatternEvent = new CustomEvent('dragpattern', {
+      detail: {
+        position,
+        pattern,
+        clickRelease
+      }
+    })
+  
+    document.dispatchEvent(dragPatternEvent);
+  }
+
+  const getPosition = (event) => {
+    if (event.touches && event.touches.length > 0) {
+      return {
+        x: event.touches[0].clientX,
+        y: event.touches[0].clientY
+      }
+    } else if (event.changedTouches && event.changedTouches.length > 0) {
+      return {
+        x: event.changedTouches[0].clientX,
+        y: event.changedTouches[0].clientY
+      }
+    } else {
+      return {
+        x: event.clientX,
+        y: event.clientY
+      }
+    }
+  }
 
   const updateElementPosition = (event, isDrop) => {
-    const position = {
-      x: event.clientX - horizontalDistanceToTargetEdge,
-      y: event.clientY - verticalDistanceToTargetEdge
-    }
+    const position = getPosition(event)
+    position.x -= horizontalDistanceToTargetEdge
+    position.y -= verticalDistanceToTargetEdge
+
     targetElement.style.left = position.x + 'px'
     targetElement.style.top = position.y + 'px'
-  
+
     emitDragDAndDropEvent(position, pattern, isDrop)
-  
+
     if (isDrop) {
       targetElement.remove()
     }
   }
 
-  targetElement.onmousemove = (onMouseMoveEvent) => updateElementPosition(onMouseMoveEvent, false)
-  targetElement.onmouseup = (onMouseUpEvent) => updateElementPosition(onMouseUpEvent, true)
+  if (TOUCH_DEVICE) {
+    targetElement.ontouchmove = (onTouchMoveEvent) => updateElementPosition(onTouchMoveEvent, false)
+    targetElement.ontouchend = (onTouchEndEvent) => updateElementPosition(onTouchEndEvent, true)
+  } else {
+    targetElement.onmousemove = (onMouseMoveEvent) => updateElementPosition(onMouseMoveEvent, false)
+    targetElement.onmouseup = (onMouseUpEvent) => updateElementPosition(onMouseUpEvent, true)
+  }
 }
 
 bestPatterns.forEach((bestPattern, index) => {
@@ -76,8 +100,7 @@ bestPatterns.forEach((bestPattern, index) => {
 
   board.draw()
 
-  // Al presionar el mouse clonamos un nuevo canvas
-  canvas.addEventListener('mousedown', (event) => {
+  const createCopyOfCanvas = (event) => {
     // creamos una copia del canvas y la posicionamos 5 px a la derecha
     let clonedCanvas = canvas.cloneNode()
     let cloneCanvasId = canvasId + '-clone'
@@ -104,19 +127,39 @@ bestPatterns.forEach((bestPattern, index) => {
     clonedCanvas.addEventListener('mousedown', (event) => dragAndDrop(event, bestPattern.pattern))
 
     // Simulamos un evento 'mousedown'
-    const clonedEvent = new MouseEvent('mousedown', {
-      bubbles: false, // para evitar que el evento se propague
-      cancelable: true,
-      clientX: event.clientX,
-      clientY: event.clientY
-    })
+    const cloneEvent = (event) => {
+      if (TOUCH_DEVICE) {
+        const touch = event.touches[0]
+        return new TouchEvent('touchstart', {
+          bubbles: false, // para evitar que el evento se propague
+          cancelable: true,
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        })
+      } else {
+        return new MouseEvent('mousedown', {
+          bubbles: false, // para evitar que el evento se propague
+          cancelable: true,
+          clientX: event.clientX,
+          clientY: event.clientY
+        })
+      }
+    }
+
+    const clonedEvent = cloneEvent(event)
 
     clonedCanvas.dispatchEvent(clonedEvent)
-    
+
     // si esto pasa, cerramos el sidebar automaticamente
     closeSidebarMenu()
-  })
+  }
 
+
+  if(TOUCH_DEVICE) {
+    canvas.ontouchstart = createCopyOfCanvas
+  } else {
+    canvas.onmousedown = createCopyOfCanvas
+  }
 
   patternsInCanvas.push({
     pattern: bestPattern.pattern,
