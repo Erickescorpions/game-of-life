@@ -7,6 +7,11 @@ const sidebarContent = document.querySelector('#sidebar-content')
 
 let patternsInCanvas = []
 
+const closeSidebarMenu = () => {
+  const menuButton = document.querySelector('#menu-checkbox')
+  menuButton.checked = false
+}
+
 const emitDragDAndDropEvent = (position, pattern, clickRelease) => {
   const dragPatternEvent = new CustomEvent('dragpattern', {
     detail: {
@@ -113,6 +118,9 @@ bestPatterns.forEach((bestPattern, index) => {
     })
 
     clonedCanvas.dispatchEvent(clonedEvent)
+    
+    // si esto pasa, cerramos el sidebar automaticamente
+    closeSidebarMenu()
   })
 
 

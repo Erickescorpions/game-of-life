@@ -2,7 +2,7 @@ import './style.css'
 import { GAME_STATE, WIDTH, HEIGHT, CELL_SIZE, TOTAL_VERTICAL_CELLS, TOTAL_HORIZONTAL_CELLS } from './src/constants'
 import { Board } from './src/board'
 import { UI } from './src/ui'
-import './src/aside'
+import './src/sidebar'
 
 const startButton = document.getElementById('start')
 
