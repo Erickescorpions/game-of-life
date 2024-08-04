@@ -30,29 +30,23 @@ function dragAndDrop(event, pattern) {
   const horizontalDistanceToTargetEdge = Math.abs(rect.left - event.clientX)
   const verticalDistanceToTargetEdge = Math.abs(rect.top - event.clientY)
 
-  const moveWithTheMouse = (onMouseMoveEvent) => {
+  const updateElementPosition = (event, isDrop) => {
     const position = {
-      x: onMouseMoveEvent.clientX - horizontalDistanceToTargetEdge,
-      y: onMouseMoveEvent.clientY - verticalDistanceToTargetEdge
+      x: event.clientX - horizontalDistanceToTargetEdge,
+      y: event.clientY - verticalDistanceToTargetEdge
     }
     targetElement.style.left = position.x + 'px'
     targetElement.style.top = position.y + 'px'
-
-    emitDragDAndDropEvent(position, pattern, false)
-  }
-
-  targetElement.onmousemove = (onMouseMoveEvent) => moveWithTheMouse(onMouseMoveEvent)
-  targetElement.onmouseup = (onMouseUpEvent) => {
-    const position = {
-      x: onMouseUpEvent.clientX - horizontalDistanceToTargetEdge,
-      y: onMouseUpEvent.clientY - verticalDistanceToTargetEdge
+  
+    emitDragDAndDropEvent(position, pattern, isDrop)
+  
+    if (isDrop) {
+      targetElement.remove()
     }
-    targetElement.style.left = position.x + 'px'
-    targetElement.style.top = position.y + 'px'
-
-    emitDragDAndDropEvent(position, pattern, true)
-    targetElement.remove()
   }
+
+  targetElement.onmousemove = (onMouseMoveEvent) => updateElementPosition(onMouseMoveEvent, false)
+  targetElement.onmouseup = (onMouseUpEvent) => updateElementPosition(onMouseUpEvent, true)
 }
 
 bestPatterns.forEach((bestPattern, index) => {
