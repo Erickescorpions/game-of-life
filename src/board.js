@@ -150,19 +150,6 @@ export class Board {
     this.cells = newBoard
 
     this.draw()
-
-    // this.cells.forEach((row, rowIndex) => {
-    //   row.forEach((cell, cellIndex) => {
-    //     cell.setState(newBoard[rowIndex][cellIndex].state)
-    //     if (cell.state === CELL_STATE.LIVE) {
-    //       this.ui.fill(cell.draw())
-    //       this.ui.stroke(cell.draw())
-    //     } else {
-    //       this.ui.clearRect(cell.x, cell.y, this.cell_size, this.cell_size)
-    //       this.ui.stroke(cell.draw())
-    //     }
-    //   })
-    // })
   }
 
   fillBoard(pattern, chr) {
