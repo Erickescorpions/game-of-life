@@ -128,9 +128,8 @@ bestPatterns.forEach((bestPattern, index) => {
   })
 })
 
-patternsInCanvas.forEach(patternInCanva => {
-  setInterval(() => {
-    window.requestAnimationFrame(() => patternInCanva.board.generateLife())
-  }, 1000 / 2)
-})
-
+// patternsInCanvas.forEach(patternInCanva => {
+//   setInterval(() => {
+//     window.requestAnimationFrame(() => patternInCanva.board.generateLife())
+//   }, 1000 / 2)
+// })
