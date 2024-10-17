@@ -45,8 +45,12 @@ function dragAndDrop(event, pattern) {
     }
   }
 
-  targetElement.onmousemove = (onMouseMoveEvent) => updateElementPosition(onMouseMoveEvent, false)
-  targetElement.onmouseup = (onMouseUpEvent) => updateElementPosition(onMouseUpEvent, true)
+  document.onmousemove = (onMouseMoveEvent) => updateElementPosition(onMouseMoveEvent, false)
+  document.onmouseup = (onMouseUpEvent) => {
+    updateElementPosition(onMouseUpEvent, true)
+    document.onmousemove = null
+    document.onmouseup = null
+  }
 }
 
 bestPatterns.forEach((bestPattern, index) => {
