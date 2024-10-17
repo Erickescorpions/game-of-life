@@ -9,6 +9,7 @@ export class Board {
     this.cell_size = cell_size
     this.num_horizontal_cells = num_horizontal_cells
     this.num_vertical_cells = num_vertical_cells
+    this.previousDragPosition = {rowIndex: 0, cellIndex: 0}
 
     for (let i = 0; i < num_vertical_cells; i++) {
       let row = [];
@@ -50,6 +51,33 @@ export class Board {
         })
       })
 
+      if(this.previousDragPosition.cellIndex !== null || this.previousDragPosition.rowIndex !== null) {
+        // limpiamos la posicion anterior
+        const startRow = this.previousDragPosition.rowIndex;
+        const startCol = this.previousDragPosition.cellIndex;
+        const endRow = startRow + pattern.length;
+        const endCol = startCol + pattern[0].length;
+
+        for (let row = startRow; row < endRow; row++) {
+          if (row < this.cells.length) {
+            for (let col = startCol; col < endCol; col++) {
+              if (col < this.cells[row].length) {
+                let currentBoardCell = this.cells[row][col]
+
+                if(currentBoardCell.state === CELL_STATE.DEAD) {
+                  this.ui.clearRect(currentBoardCell.x, currentBoardCell.y, this.cell_size, this.cell_size)
+                  this.ui.stroke(currentBoardCell.draw())
+                }
+              }
+            }
+          }
+        }
+      }
+
+      this.previousDragPosition.rowIndex = startCell.rowIndex
+      this.previousDragPosition.cellIndex = startCell.cellIndex
+
+
       pattern.forEach((row, rowIndex) => row.forEach((cell, cellIndex) => {
         let verticalCellPos = rowIndex + startCell.rowIndex
         let horizontalCellPos = cellIndex + startCell.cellIndex
@@ -64,19 +92,27 @@ export class Board {
 
           if(clickRelease === true) {
             currentBoardCell.setState(CELL_STATE.LIVE)
+            this.previousDragPosition.rowIndex = null
+            this.previousDragPosition.cellIndex = null
           }
         } else {
-          this.ui.clearRect(currentBoardCell.x, currentBoardCell.y, this.cell_size, this.cell_size)
-          this.ui.stroke(currentBoardCell.draw())
+          if(currentBoardCell.state === CELL_STATE.DEAD) {
+            this.ui.clearRect(currentBoardCell.x, currentBoardCell.y, this.cell_size, this.cell_size)
+            this.ui.stroke(currentBoardCell.draw())
+          }
         }
       }))
     })
   }
 
   draw() {
+    this.ui.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+
     this.cells.forEach(row => row.forEach(cell => {
       if (cell.state === CELL_STATE.LIVE) {
         this.ui.fill(cell.draw());
+      } else {
+        this.ui.clearRect(cell.x, cell.y, this.cell_size, this.cell_size);
       }
       this.ui.stroke(cell.draw());
     }));
@@ -111,18 +147,22 @@ export class Board {
       })
     )
 
-    this.cells.forEach((row, rowIndex) => {
-      row.forEach((cell, cellIndex) => {
-        cell.setState(newBoard[rowIndex][cellIndex].state)
-        if (cell.state === CELL_STATE.LIVE) {
-          this.ui.fill(cell.draw())
-          this.ui.stroke(cell.draw())
-        } else {
-          this.ui.clearRect(cell.x, cell.y, this.cell_size, this.cell_size)
-          this.ui.stroke(cell.draw())
-        }
-      })
-    })
+    this.cells = newBoard
+
+    this.draw()
+
+    // this.cells.forEach((row, rowIndex) => {
+    //   row.forEach((cell, cellIndex) => {
+    //     cell.setState(newBoard[rowIndex][cellIndex].state)
+    //     if (cell.state === CELL_STATE.LIVE) {
+    //       this.ui.fill(cell.draw())
+    //       this.ui.stroke(cell.draw())
+    //     } else {
+    //       this.ui.clearRect(cell.x, cell.y, this.cell_size, this.cell_size)
+    //       this.ui.stroke(cell.draw())
+    //     }
+    //   })
+    // })
   }
 
   fillBoard(pattern, chr) {
